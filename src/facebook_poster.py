@@ -21,7 +21,7 @@ GRAPH_VIDEO_URL = f"https://graph-video.facebook.com/{GRAPH_API_VERSION}"
 CHUNK_SIZE = 10 * 1024 * 1024   # 10 MB chunks for resumable upload
 TOKEN_EXPIRY_WARNING_DAYS = 7
 PROCESSING_POLL_INTERVAL = 10   # seconds between status checks
-PROCESSING_TIMEOUT = 300        # seconds before giving up on processing check
+PROCESSING_TIMEOUT = 60         # seconds before giving up on processing check
 
 _TRANSIENT_STATUS_CODES = {500, 502, 503, 504}
 _MAX_UPLOAD_RETRIES = 5
@@ -325,7 +325,7 @@ def _upload_reel(page_id: str, token: str, video_path: Path,
         resp = _post_with_retry(endpoint, data=finish_payload, timeout=60)
         resp.raise_for_status()
         logger.info("Reel upload complete. FB video ID: %s", video_id)
-        _wait_for_processing(video_id, token)
+        # Reels are processed async by FB — no need to poll
         return video_id
     except requests.RequestException as exc:
         logger.error("Reel upload finish failed: %s", exc)

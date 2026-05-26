@@ -51,8 +51,8 @@ def main() -> None:
         epilog=__doc__,
     )
     parser.add_argument(
-        "--slot", type=int, choices=[1, 2, 3], required=True,
-        help="Upload slot: 1=6PM PKT (13:00 UTC), 2=8PM PKT (15:00 UTC), 3=10PM PKT (17:00 UTC)",
+        "--slot", type=int, required=True,
+        help="Upload slot: 1=6PM PKT, 2=8PM PKT, 3=10PM PKT. Extra slots (4, 5, …) publish immediately.",
     )
     parser.add_argument(
         "--channel", type=str, default=None, metavar="CHANNEL_ID",

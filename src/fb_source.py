@@ -29,13 +29,14 @@ def get_source_videos(
     """
     Fetch videos from the source Facebook page, newest first.
     Returns a list of video dicts or None on network error.
-    Each dict has: id, title, description, created_time, length (seconds).
+    Each dict has: id, title, description, created_time, length (seconds),
+    width, height (integers, 0 if unavailable).
     Does NOT include the source URL — fetch fresh via get_video_source_url() before downloading.
     """
     videos: List[Dict[str, Any]] = []
     url = f"{GRAPH_URL}/{source_page_id}/videos"
     params = {
-        "fields": "id,title,description,created_time,length",
+        "fields": "id,title,description,created_time,length,format",
         "access_token": access_token,
         "limit": limit,
     }
@@ -51,6 +52,17 @@ def get_source_videos(
 
         data = resp.json()
         batch = data.get("data", [])
+        # Extract width/height from the format array (pick the largest format)
+        for v in batch:
+            formats = v.pop("format", []) or []
+            if formats:
+                # Formats are ordered smallest → largest; take the last one
+                largest = formats[-1]
+                v["width"] = int(largest.get("width", 0))
+                v["height"] = int(largest.get("height", 0))
+            else:
+                v["width"] = 0
+                v["height"] = 0
         videos.extend(batch)
         logger.debug("Fetched %d videos (page %d)", len(batch), pages_fetched + 1)
 
@@ -148,8 +160,19 @@ def cleanup_stale_downloads(downloads_dir: Path, max_age_days: int = 7) -> None:
                 pass
 
 
-def is_short_video(length_seconds: Optional[float], max_seconds: int = 180) -> bool:
-    """True if the video should be posted as a Reel (short, vertical)."""
+def is_short_video(length_seconds: Optional[float], max_seconds: int = 180,
+                   width: int = 0, height: int = 0) -> bool:
+    """
+    True if the video should be posted as a Facebook Reel.
+    Requires BOTH short duration AND portrait orientation.
+    If dimensions are unknown (0), defaults to False — regular video upload —
+    because the FB Reels endpoint rejects landscape/square videos with 400.
+    """
     if length_seconds is None:
         return False
-    return length_seconds <= max_seconds
+    if length_seconds > max_seconds:
+        return False
+    # Must be portrait (height > width); skip if dimensions unknown
+    if width == 0 or height == 0:
+        return False
+    return height > width

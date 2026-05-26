@@ -136,7 +136,12 @@ def run_channel(channel: Dict[str, Any], slot: int, dry_run: bool = False) -> Di
             return result
 
         length_seconds = video.get("length")
-        is_reel = is_short_video(length_seconds, channel.get("shorts_max_seconds", 180))
+        is_reel = is_short_video(
+            length_seconds,
+            channel.get("shorts_max_seconds", 180),
+            width=video.get("width", 0),
+            height=video.get("height", 0),
+        )
 
         title = video.get("title") or video["id"]
         description = _build_description(video, channel)

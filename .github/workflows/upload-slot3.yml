@@ -43,7 +43,6 @@ jobs:
           key: fb-fb-automation-db-${{ github.sha }}-${{ github.run_id }}
           restore-keys: |
             fb-fb-automation-db-${{ github.sha }}-
-            fb-fb-automation-db-
 
       - name: Restore credentials and tokens
         env:

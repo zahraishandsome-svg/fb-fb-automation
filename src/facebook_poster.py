@@ -261,63 +261,68 @@ def _upload_resumable(page_id: str, token: str, video_path: Path,
 def _upload_reel(page_id: str, token: str, video_path: Path,
                  title: str, description: str,
                  scheduled_publish_time: Optional[int] = None) -> Optional[str]:
-    """Upload as a Facebook Reel for better reach on short vertical videos."""
-    url = f"{GRAPH_VIDEO_URL}/{page_id}/video_reels"
+    """
+    Upload as a Facebook Reel using the current Graph API flow:
+      1. Start  → POST /page_id/video_reels?upload_phase=start  → {video_id, upload_url}
+      2. Upload → POST upload_url (rupload.facebook.com) with OAuth header + offset headers
+      3. Finish → POST /page_id/video_reels?upload_phase=finish with video_id + metadata
+    """
+    endpoint = f"{GRAPH_VIDEO_URL}/{page_id}/video_reels"
     file_size = video_path.stat().st_size
 
+    # ── 1. Start ──────────────────────────────────────────────────────────────
     try:
         resp = _post_with_retry(
-            url,
-            data={
-                "upload_phase": "start",
-                "file_size": file_size,
-                "access_token": token,
-            },
+            endpoint,
+            data={"upload_phase": "start", "file_size": file_size, "access_token": token},
             timeout=30,
         )
         resp.raise_for_status()
         init_data = resp.json()
-        upload_session_id = init_data.get("upload_session_id")
         video_id = init_data.get("video_id")
-        start_offset = int(init_data.get("start_offset", 0))
-        end_offset = int(init_data.get("end_offset", file_size))
-    except (requests.RequestException, ValueError, KeyError) as exc:
+        upload_url = init_data.get("upload_url")
+        if not video_id or not upload_url:
+            logger.error("Reel init missing video_id/upload_url: %s", init_data)
+            return None
+        logger.debug("Reel init OK. video_id=%s upload_url=%s…", video_id, upload_url[:60])
+    except (requests.RequestException, ValueError) as exc:
         logger.error("Reel upload init failed: %s", exc)
         return None
 
-    with open(video_path, "rb") as f:
-        f.seek(start_offset)
-        video_data = f.read(end_offset - start_offset)
-
+    # ── 2. Upload to rupload URL ──────────────────────────────────────────────
     try:
-        _post_with_retry(
-            url,
-            data={
-                "upload_phase": "transfer",
-                "start_offset": start_offset,
-                "upload_session_id": upload_session_id,
-                "access_token": token,
+        with open(video_path, "rb") as f:
+            video_data = f.read()
+        upload_resp = requests.post(
+            upload_url,
+            headers={
+                "Authorization": f"OAuth {token}",
+                "offset": "0",
+                "file_size": str(file_size),
             },
-            files={"video_file_chunk": video_data},
+            data=video_data,
             timeout=300,
         )
+        upload_resp.raise_for_status()
+        logger.debug("Reel upload OK: %s", upload_resp.text[:100])
     except requests.RequestException as exc:
         logger.error("Reel upload transfer failed: %s", exc)
         return None
 
+    # ── 3. Finish ─────────────────────────────────────────────────────────────
     try:
         finish_payload = {
             "upload_phase": "finish",
-            "upload_session_id": upload_session_id,
             "video_id": video_id,
             "title": title,
             "description": description,
+            "published": "true",
             "access_token": token,
         }
         if scheduled_publish_time:
             finish_payload["scheduled_publish_time"] = scheduled_publish_time
             finish_payload["published"] = "false"
-        resp = _post_with_retry(url, data=finish_payload, timeout=60)
+        resp = _post_with_retry(endpoint, data=finish_payload, timeout=60)
         resp.raise_for_status()
         logger.info("Reel upload complete. FB video ID: %s", video_id)
         _wait_for_processing(video_id, token)

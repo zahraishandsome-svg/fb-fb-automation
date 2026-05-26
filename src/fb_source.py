@@ -59,6 +59,7 @@ def get_source_videos(
         params = {}  # next URL already has all params encoded
         pages_fetched += 1
 
+    videos.reverse()   # oldest first → post chronologically
     return videos
 
 

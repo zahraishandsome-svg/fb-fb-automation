@@ -3,8 +3,9 @@
 Main entry point for Facebook → Facebook Page automation.
 
 Usage examples:
-  python run.py --slot 1                          # First daily upload (all channels)
-  python run.py --slot 2                          # Second daily upload (all channels)
+  python run.py --slot 1                          # Slot 1: publishes at 6PM PKT (13:00 UTC)
+  python run.py --slot 2                          # Slot 2: publishes at 8PM PKT (15:00 UTC)
+  python run.py --slot 3                          # Slot 3: publishes at 10PM PKT (17:00 UTC)
   python run.py --slot 1 --channel page_1         # One channel only (testing)
   python run.py --slot 1 --dry-run                # Full pipeline without uploading
   python run.py --slot 1 --dry-run --channel page_1
@@ -50,8 +51,8 @@ def main() -> None:
         epilog=__doc__,
     )
     parser.add_argument(
-        "--slot", type=int, choices=[1, 2], required=True,
-        help="Upload slot: 1=8 PM PKT (15:00 UTC), 2=1 AM PKT (20:00 UTC)",
+        "--slot", type=int, choices=[1, 2, 3], required=True,
+        help="Upload slot: 1=6PM PKT (13:00 UTC), 2=8PM PKT (15:00 UTC), 3=10PM PKT (17:00 UTC)",
     )
     parser.add_argument(
         "--channel", type=str, default=None, metavar="CHANNEL_ID",

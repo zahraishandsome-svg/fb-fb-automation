@@ -1,8 +1,8 @@
-name: Upload Slot 2 (8PM PKT)
+name: Upload Slot 3 (10PM PKT)
 
 on:
   schedule:
-    - cron: "50 14 * * *"   # 14:50 UTC = 7:50 PM PKT → schedules publish at 8:00 PM PKT (15:00 UTC)
+    - cron: "50 16 * * *"   # 16:50 UTC = 9:50 PM PKT → schedules publish at 10:00 PM PKT (17:00 UTC)
   workflow_dispatch:
     inputs:
       channel:
@@ -71,13 +71,13 @@ jobs:
             echo "DRY_RUN=true" >> .env
           fi
 
-      - name: Run slot 2
+      - name: Run slot 3
         run: |
           CHANNEL_ARG=""
           if [ -n "${{ github.event.inputs.channel }}" ]; then
             CHANNEL_ARG="--channel ${{ github.event.inputs.channel }}"
           fi
-          python run.py --slot 2 $CHANNEL_ARG
+          python run.py --slot 3 $CHANNEL_ARG
 
       - name: Save DB cache
         if: always()
@@ -111,6 +111,6 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: logs-slot2-${{ github.run_id }}
+          name: logs-slot3-${{ github.run_id }}
           path: logs/
           retention-days: 14

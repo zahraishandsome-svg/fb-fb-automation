@@ -118,36 +118,45 @@ def upload_video(
     description: str,
     is_reel: bool = False,
     dry_run: bool = False,
+    scheduled_publish_time: Optional[int] = None,
 ) -> Optional[str]:
     """
     Upload a video to a Facebook Page.
     Returns the Facebook video ID on success, None on failure.
+    If scheduled_publish_time (UTC Unix timestamp) is provided, the video is
+    uploaded as a draft and published at that time (published=false).
     """
     if dry_run:
-        logger.info("[DRY RUN] Would upload '%s' to page %s (reel=%s)", title, page_id, is_reel)
+        sched = f" | scheduled={scheduled_publish_time}" if scheduled_publish_time else ""
+        logger.info("[DRY RUN] Would upload '%s' to page %s (reel=%s%s)", title, page_id, is_reel, sched)
         return "dry_run_video_id"
 
     file_size = video_path.stat().st_size
-    logger.info("Uploading to Facebook page %s | size=%.1f MB | reel=%s",
-                page_id, file_size / 1_048_576, is_reel)
+    logger.info("Uploading to Facebook page %s | size=%.1f MB | reel=%s | scheduled=%s",
+                page_id, file_size / 1_048_576, is_reel, scheduled_publish_time)
 
     if is_reel:
-        return _upload_reel(page_id, page_access_token, video_path, title, description)
+        return _upload_reel(page_id, page_access_token, video_path, title, description, scheduled_publish_time)
     elif file_size < 1_048_576:
-        return _upload_simple(page_id, page_access_token, video_path, title, description)
+        return _upload_simple(page_id, page_access_token, video_path, title, description, scheduled_publish_time)
     else:
-        return _upload_resumable(page_id, page_access_token, video_path, title, description, file_size)
+        return _upload_resumable(page_id, page_access_token, video_path, title, description, file_size, scheduled_publish_time)
 
 
 def _upload_simple(page_id: str, token: str, video_path: Path,
-                   title: str, description: str) -> Optional[str]:
+                   title: str, description: str,
+                   scheduled_publish_time: Optional[int] = None) -> Optional[str]:
     """Simple (non-resumable) upload for small videos < 1 MB."""
     url = f"{GRAPH_VIDEO_URL}/{page_id}/videos"
     try:
+        post_data = {"title": title, "description": description, "access_token": token}
+        if scheduled_publish_time:
+            post_data["scheduled_publish_time"] = scheduled_publish_time
+            post_data["published"] = "false"
         with open(video_path, "rb") as f:
             resp = _post_with_retry(
                 url,
-                data={"title": title, "description": description, "access_token": token},
+                data=post_data,
                 files={"source": f},
                 timeout=300,
             )
@@ -163,7 +172,8 @@ def _upload_simple(page_id: str, token: str, video_path: Path,
 
 
 def _upload_resumable(page_id: str, token: str, video_path: Path,
-                      title: str, description: str, file_size: int) -> Optional[str]:
+                      title: str, description: str, file_size: int,
+                      scheduled_publish_time: Optional[int] = None) -> Optional[str]:
     """Resumable (chunked) upload for videos >= 1 MB."""
     base_url = f"{GRAPH_VIDEO_URL}/{page_id}/videos"
 
@@ -223,17 +233,17 @@ def _upload_resumable(page_id: str, token: str, video_path: Path,
             end_offset = min(new_end, file_size)
 
     try:
-        resp = _post_with_retry(
-            base_url,
-            data={
-                "upload_phase": "finish",
-                "upload_session_id": upload_session_id,
-                "title": title,
-                "description": description,
-                "access_token": token,
-            },
-            timeout=60,
-        )
+        finish_payload = {
+            "upload_phase": "finish",
+            "upload_session_id": upload_session_id,
+            "title": title,
+            "description": description,
+            "access_token": token,
+        }
+        if scheduled_publish_time:
+            finish_payload["scheduled_publish_time"] = scheduled_publish_time
+            finish_payload["published"] = "false"
+        resp = _post_with_retry(base_url, data=finish_payload, timeout=60)
         resp.raise_for_status()
         finish_data = resp.json()
         video_id = finish_data.get("video_id") or finish_data.get("id")
@@ -247,7 +257,8 @@ def _upload_resumable(page_id: str, token: str, video_path: Path,
 
 
 def _upload_reel(page_id: str, token: str, video_path: Path,
-                 title: str, description: str) -> Optional[str]:
+                 title: str, description: str,
+                 scheduled_publish_time: Optional[int] = None) -> Optional[str]:
     """Upload as a Facebook Reel for better reach on short vertical videos."""
     url = f"{GRAPH_VIDEO_URL}/{page_id}/video_reels"
     file_size = video_path.stat().st_size
@@ -293,18 +304,18 @@ def _upload_reel(page_id: str, token: str, video_path: Path,
         return None
 
     try:
-        resp = _post_with_retry(
-            url,
-            data={
-                "upload_phase": "finish",
-                "upload_session_id": upload_session_id,
-                "video_id": video_id,
-                "title": title,
-                "description": description,
-                "access_token": token,
-            },
-            timeout=60,
-        )
+        finish_payload = {
+            "upload_phase": "finish",
+            "upload_session_id": upload_session_id,
+            "video_id": video_id,
+            "title": title,
+            "description": description,
+            "access_token": token,
+        }
+        if scheduled_publish_time:
+            finish_payload["scheduled_publish_time"] = scheduled_publish_time
+            finish_payload["published"] = "false"
+        resp = _post_with_retry(url, data=finish_payload, timeout=60)
         resp.raise_for_status()
         logger.info("Reel upload complete. FB video ID: %s", video_id)
         _wait_for_processing(video_id, token)

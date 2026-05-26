@@ -56,7 +56,7 @@ def _validate_channel(ch: Dict[str, Any]) -> Dict[str, Any]:
     ch["dest_credentials_file"] = PROJECT_ROOT / ch["dest_credentials_file"]
     ch["dest_token_file"] = PROJECT_ROOT / ch["dest_token_file"]
 
-    ch.setdefault("videos_per_day", 2)
+    ch.setdefault("videos_per_day", 3)
     ch.setdefault("description_footer", "")
     ch.setdefault("default_tags", [])
     ch.setdefault("enabled", True)

@@ -13,6 +13,11 @@ from .notifier import send_failure_alert, send_token_warning, send_daily_summary
 
 logger = logging.getLogger(__name__)
 
+# UTC hour at which each slot's video goes live on Facebook.
+# Workflows run 10 min early; the script schedules publish for this exact UTC hour.
+# PKT = UTC+5: slot1=6PM PKT=13UTC, slot2=8PM PKT=15UTC, slot3=10PM PKT=17UTC
+SLOT_PUBLISH_UTC_HOUR: dict = {1: 13, 2: 15, 3: 17}
+
 
 def run_all_channels(
     config: Dict[str, Any],
@@ -43,7 +48,12 @@ def run_all_channels(
         logger.info("── Starting channel: %s (%s → %s) ──",
                     channel_id, channel["source_page_name"], channel["dest_page_name"])
         try:
-            result = run_channel(channel=channel, slot=slot, dry_run=dry_run)
+            result = run_channel(
+                channel=channel,
+                slot=slot,
+                dry_run=dry_run,
+                publish_utc_hour=SLOT_PUBLISH_UTC_HOUR.get(slot),
+            )
             results.append(result)
 
             if result.get("token_warning"):
@@ -82,7 +92,7 @@ def run_all_channels(
             send_failure_alert(webhook_url=webhook_url, failures=failures, slot=slot)
         if token_warnings:
             send_token_warning(webhook_url=webhook_url, warnings=token_warnings)
-        if slot == 2:
+        if slot == 3:
             channel_names = {
                 ch["id"]: ch.get("dest_page_name", "")
                 for ch in config.get("channels", [])

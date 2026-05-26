@@ -7,7 +7,7 @@ channels:
     source_token_file: "tokens/page_1_source_token.json"
     dest_credentials_file: "credentials/page_1_dest_credentials.json"
     dest_token_file: "tokens/page_1_dest_token.json"
-    videos_per_day: 2
+    videos_per_day: 3
     description_footer: ""
     default_tags: []
     enabled: true

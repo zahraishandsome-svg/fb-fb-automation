@@ -5,7 +5,7 @@ Returns a result dict so orchestrator can aggregate and notify.
 """
 
 import logging
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Dict, Any, Optional
 
@@ -25,7 +25,8 @@ PROJECT_ROOT = Path(__file__).parent.parent
 DOWNLOADS_DIR = PROJECT_ROOT / "downloads"
 
 
-def run_channel(channel: Dict[str, Any], slot: int, dry_run: bool = False) -> Dict[str, Any]:
+def run_channel(channel: Dict[str, Any], slot: int, dry_run: bool = False,
+                publish_utc_hour: Optional[int] = None) -> Dict[str, Any]:
     """
     Full pipeline for one channel, one slot.
     Returns: {channel_id, slot, status, video_uploaded, fb_url, error, token_warnings}
@@ -141,6 +142,24 @@ def run_channel(channel: Dict[str, Any], slot: int, dry_run: bool = False) -> Di
         title = video.get("title") or video["id"]
         description = _build_description(video, channel)
 
+        # Compute scheduled publish time (UTC Unix timestamp) if a target hour is given
+        scheduled_publish_time: Optional[int] = None
+        if publish_utc_hour is not None:
+            now_utc = datetime.now(timezone.utc)
+            today = now_utc.date()
+            publish_dt = datetime(today.year, today.month, today.day,
+                                  publish_utc_hour, 0, 0, tzinfo=timezone.utc)
+            scheduled_publish_time = int(publish_dt.timestamp())
+            # FB requires at least 10 min in the future; if we missed the window, add 15 min buffer
+            min_allowed = int(now_utc.timestamp()) + 600
+            if scheduled_publish_time < min_allowed:
+                scheduled_publish_time = int(now_utc.timestamp()) + 900
+                logger.warning("[%s] Slot publish time already passed — scheduling 15 min from now (%d)",
+                               channel_id, scheduled_publish_time)
+            logger.info("[%s] Scheduling publish at UTC %s (ts=%d)",
+                        channel_id, datetime.fromtimestamp(scheduled_publish_time, tz=timezone.utc).isoformat(),
+                        scheduled_publish_time)
+
         dest_video_id = upload_video(
             page_id=dest_page_id,
             page_access_token=dest_token,
@@ -149,6 +168,7 @@ def run_channel(channel: Dict[str, Any], slot: int, dry_run: bool = False) -> Di
             description=description,
             is_reel=is_reel,
             dry_run=dry_run,
+            scheduled_publish_time=scheduled_publish_time,
         )
 
         if dest_video_id:

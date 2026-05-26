@@ -1,8 +1,8 @@
 channels:
   - id: page_1
-    source_page_id: "111111111"          # Facebook Page ID of the source page
-    source_page_name: "My Source Page"
-    dest_page_name: "My New FB Page"
+    source_page_id: "1046482988557351"   # Walter Hayes
+    source_page_name: "Walter Hayes"
+    dest_page_name: "Walt Goodman"
     source_credentials_file: "credentials/page_1_source_credentials.json"
     source_token_file: "tokens/page_1_source_token.json"
     dest_credentials_file: "credentials/page_1_dest_credentials.json"

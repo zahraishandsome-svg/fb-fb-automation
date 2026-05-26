@@ -316,20 +316,37 @@ def _upload_reel(page_id: str, token: str, video_path: Path,
             "video_id": video_id,
             "title": title,
             "description": description,
-            "published": "true",
             "access_token": token,
         }
         if scheduled_publish_time:
             finish_payload["scheduled_publish_time"] = scheduled_publish_time
             finish_payload["published"] = "false"
+        else:
+            finish_payload["published"] = "true"
         resp = _post_with_retry(endpoint, data=finish_payload, timeout=60)
         resp.raise_for_status()
-        logger.info("Reel upload complete. FB video ID: %s", video_id)
-        # Reels are processed async by FB — no need to poll
-        return video_id
+        logger.info("Reel finish phase complete. FB video ID: %s", video_id)
     except requests.RequestException as exc:
         logger.error("Reel upload finish failed: %s", exc)
         return None
+
+    # ── 4. Explicit publish (Reels API ignores published=true in finish phase) ─
+    if not scheduled_publish_time:
+        try:
+            pub_resp = requests.post(
+                f"{GRAPH_URL}/{video_id}",
+                data={"published": "true", "access_token": token},
+                timeout=60,
+            )
+            pub_resp.raise_for_status()
+            logger.info("Reel published. FB video ID: %s", video_id)
+        except requests.RequestException as exc:
+            logger.warning(
+                "Reel publish call failed for %s (video may still be a draft): %s",
+                video_id, exc,
+            )
+
+    return video_id
 
 
 def _wait_for_processing(video_id: str, token: str) -> None:

@@ -25,8 +25,7 @@ PROJECT_ROOT = Path(__file__).parent.parent
 DOWNLOADS_DIR = PROJECT_ROOT / "downloads"
 
 
-def run_channel(channel: Dict[str, Any], slot: int, dry_run: bool = False,
-                publish_utc_hour: Optional[int] = None) -> Dict[str, Any]:
+def run_channel(channel: Dict[str, Any], slot: int, dry_run: bool = False) -> Dict[str, Any]:
     """
     Full pipeline for one channel, one slot.
     Returns: {channel_id, slot, status, video_uploaded, fb_url, error, token_warnings}
@@ -142,23 +141,8 @@ def run_channel(channel: Dict[str, Any], slot: int, dry_run: bool = False,
         title = video.get("title") or video["id"]
         description = _build_description(video, channel)
 
-        # Compute scheduled publish time (UTC Unix timestamp) if a target hour is given
-        scheduled_publish_time: Optional[int] = None
-        if publish_utc_hour is not None:
-            now_utc = datetime.now(timezone.utc)
-            today = now_utc.date()
-            publish_dt = datetime(today.year, today.month, today.day,
-                                  publish_utc_hour, 0, 0, tzinfo=timezone.utc)
-            scheduled_publish_time = int(publish_dt.timestamp())
-            # FB requires at least 10 min in the future; if we missed the window, add 15 min buffer
-            min_allowed = int(now_utc.timestamp()) + 600
-            if scheduled_publish_time < min_allowed:
-                scheduled_publish_time = int(now_utc.timestamp()) + 900
-                logger.warning("[%s] Slot publish time already passed — scheduling 15 min from now (%d)",
-                               channel_id, scheduled_publish_time)
-            logger.info("[%s] Scheduling publish at UTC %s (ts=%d)",
-                        channel_id, datetime.fromtimestamp(scheduled_publish_time, tz=timezone.utc).isoformat(),
-                        scheduled_publish_time)
+        # Compute scheduled publish time from per-channel slot_publish_times_utc config
+        scheduled_publish_time: Optional[int] = _get_scheduled_publish_time(channel, slot, channel_id)
 
         dest_video_id = upload_video(
             page_id=dest_page_id,
@@ -282,6 +266,50 @@ def _handle_failure(channel: Dict[str, Any], video: Dict[str, Any], error_msg: s
     )
     logger.warning("[%s] Video %s queued for retry tomorrow: %s",
                    channel["id"], video["id"], error_msg)
+
+
+# ── Scheduled publish time ────────────────────────────────────────────────────
+
+def _get_scheduled_publish_time(channel: Dict[str, Any], slot: int,
+                                 channel_id: str) -> Optional[int]:
+    """
+    Calculate the UTC Unix timestamp at which this slot's video should go live.
+    Reads slot_publish_times_utc from channel config (e.g. {1: "13:00", 2: "15:00"}).
+    Returns a Unix timestamp when the target time is more than 15 minutes in the future —
+    video uploads as a draft and Facebook publishes it at exactly that time.
+    Returns None if no publish time is configured or the target is already too close/past
+    (falls back to immediate publish).
+    Facebook requires scheduled_publish_time to be at least 10 minutes in the future.
+    """
+    times = channel.get("slot_publish_times_utc") or {}
+    time_str = times.get(slot) or times.get(str(slot))
+    if not time_str:
+        return None
+
+    try:
+        h, m = map(int, str(time_str).split(":"))
+    except (ValueError, AttributeError):
+        logger.warning("[%s] Invalid slot_publish_times_utc value: %r", channel_id, time_str)
+        return None
+
+    now_utc = datetime.now(timezone.utc)
+    target = now_utc.replace(hour=h, minute=m, second=0, microsecond=0)
+    delta_seconds = (target - now_utc).total_seconds()
+
+    if delta_seconds < 900:   # less than 15 min away or already past → publish immediately
+        logger.info(
+            "[%s] Slot %d target publish time %02d:%02dZ is past or too close "
+            "(%.0f s) — publishing immediately",
+            channel_id, slot, h, m, delta_seconds,
+        )
+        return None
+
+    ts = int(target.timestamp())
+    logger.info(
+        "[%s] Slot %d scheduling publish at %s (%d min from now)",
+        channel_id, slot, target.strftime("%Y-%m-%dT%H:%M:%SZ"), int(delta_seconds / 60),
+    )
+    return ts
 
 
 # ── Description ───────────────────────────────────────────────────────────────

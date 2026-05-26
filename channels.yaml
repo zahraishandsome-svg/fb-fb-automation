@@ -13,3 +13,9 @@ channels:
     enabled: true
     max_retry_days: 3
     shorts_max_seconds: 180
+    # Scheduled publishing: video uploads as draft, goes live at exact UTC time.
+    # GitHub Actions delays never affect when viewers see the video.
+    slot_publish_times_utc:
+      1: "13:00"   # 6 PM PKT  (UTC+5)
+      2: "15:00"   # 8 PM PKT  (UTC+5)
+      3: "17:00"   # 10 PM PKT (UTC+5)

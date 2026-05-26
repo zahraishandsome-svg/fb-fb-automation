@@ -190,6 +190,7 @@ def _upload_resumable(page_id: str, token: str, video_path: Path,
         resp.raise_for_status()
         init_data = resp.json()
         upload_session_id = init_data.get("upload_session_id")
+        video_id = init_data.get("video_id")   # FB returns video_id at init, not finish
         start_offset = int(init_data.get("start_offset", 0))
         end_offset = int(init_data.get("end_offset", CHUNK_SIZE))
     except (requests.RequestException, ValueError, KeyError) as exc:
@@ -245,8 +246,9 @@ def _upload_resumable(page_id: str, token: str, video_path: Path,
             finish_payload["published"] = "false"
         resp = _post_with_retry(base_url, data=finish_payload, timeout=60)
         resp.raise_for_status()
+        # FB returns {"success": true} on finish — video_id came from the init phase
         finish_data = resp.json()
-        video_id = finish_data.get("video_id") or finish_data.get("id")
+        video_id = video_id or finish_data.get("video_id") or finish_data.get("id")
         if video_id:
             logger.info("Resumable upload complete. FB video ID: %s", video_id)
             _wait_for_processing(video_id, token)

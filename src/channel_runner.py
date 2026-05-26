@@ -114,7 +114,12 @@ def run_channel(channel: Dict[str, Any], slot: int, dry_run: bool = False) -> Di
         source_page_id = source_creds["page_id"]
         source_token = source_token_data["page_access_token"]
         dest_page_id = dest_creds["page_id"]
-        dest_token = dest_token_data["page_access_token"]
+        # Use user access token for posting so activity log shows the user's name
+        # (not the app name). Falls back to page token if user token unavailable.
+        dest_token = (
+            dest_token_data.get("user_access_token")
+            or dest_token_data["page_access_token"]
+        )
 
         # Pick one video to upload this slot
         video, is_retry = _pick_next_video(channel, source_page_id, source_token)

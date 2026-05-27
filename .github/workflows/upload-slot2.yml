@@ -2,7 +2,7 @@ name: Upload Slot 2 (8PM PKT)
 
 on:
   schedule:
-    - cron: "45 14 * * *"   # 14:45 UTC = 7:45 PM PKT → schedules publish at 8:00 PM PKT (15:00 UTC)
+    - cron: "0 14 * * *"   # 14:00 UTC = 7:00 PM PKT → schedules publish at 8:00 PM PKT (15:00 UTC)
   workflow_dispatch:
     inputs:
       channel:

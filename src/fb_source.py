@@ -27,16 +27,16 @@ def get_source_videos(
     limit: int = 100,
 ) -> Optional[List[Dict[str, Any]]]:
     """
-    Fetch videos from the source Facebook page, newest first.
+    Fetch videos from the source Facebook page, sorted by views descending (most popular first).
     Returns a list of video dicts or None on network error.
     Each dict has: id, title, description, created_time, length (seconds),
-    width, height (integers, 0 if unavailable).
+    width, height (integers, 0 if unavailable), views (int), likes (int).
     Does NOT include the source URL — fetch fresh via get_video_source_url() before downloading.
     """
     videos: List[Dict[str, Any]] = []
     url = f"{GRAPH_URL}/{source_page_id}/videos"
     params = {
-        "fields": "id,title,description,created_time,length,format",
+        "fields": "id,title,description,created_time,length,format,views,likes.summary(total_count)",
         "access_token": access_token,
         "limit": limit,
     }
@@ -52,17 +52,20 @@ def get_source_videos(
 
         data = resp.json()
         batch = data.get("data", [])
-        # Extract width/height from the format array (pick the largest format)
         for v in batch:
+            # Extract width/height from the format array (pick the largest format)
             formats = v.pop("format", []) or []
             if formats:
-                # Formats are ordered smallest → largest; take the last one
                 largest = formats[-1]
                 v["width"] = int(largest.get("width", 0))
                 v["height"] = int(largest.get("height", 0))
             else:
                 v["width"] = 0
                 v["height"] = 0
+            # Flatten engagement metrics
+            v["views"] = int(v.get("views") or 0)
+            v["likes"] = int((v.get("likes") or {}).get("summary", {}).get("total_count") or 0)
+
         videos.extend(batch)
         logger.debug("Fetched %d videos (page %d)", len(batch), pages_fetched + 1)
 
@@ -71,7 +74,10 @@ def get_source_videos(
         params = {}  # next URL already has all params encoded
         pages_fetched += 1
 
-    videos.reverse()   # oldest first → post chronologically
+    # Sort by views descending — most popular videos posted first
+    videos.sort(key=lambda v: v["views"], reverse=True)
+    logger.info("Sorted %d videos by views (top: %d views)", len(videos),
+                videos[0]["views"] if videos else 0)
     return videos
 
 

@@ -319,12 +319,15 @@ def _upload_reel(page_id: str, token: str, video_path: Path,
             "access_token": token,
         }
         if scheduled_publish_time:
+            # Reels API uses video_state=SCHEDULED, not published=false
+            finish_payload["video_state"] = "SCHEDULED"
             finish_payload["scheduled_publish_time"] = scheduled_publish_time
-            finish_payload["published"] = "false"
         else:
-            finish_payload["published"] = "true"
+            finish_payload["video_state"] = "PUBLISHED"
         resp = _post_with_retry(endpoint, data=finish_payload, timeout=60)
-        resp.raise_for_status()
+        if not resp.ok:
+            logger.error("Reel upload finish failed: %s %s", resp.status_code, resp.text)
+            return None
         logger.info("Reel finish phase complete. FB video ID: %s", video_id)
     except requests.RequestException as exc:
         logger.error("Reel upload finish failed: %s", exc)

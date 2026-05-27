@@ -304,28 +304,28 @@ def _get_scheduled_publish_time(channel: Dict[str, Any], slot: int,
     delta_seconds = (target - now_utc).total_seconds()
 
     if delta_seconds < 0:
-        # Target already passed today (GitHub ran the cron late) — push to tomorrow.
-        target = target + timedelta(days=1)
-        delta_seconds = (target - now_utc).total_seconds()
+        # Target already passed today (GitHub cron ran late) — publish immediately.
+        # Missing a day entirely is worse than publishing at the wrong time.
         logger.info(
-            "[%s] Slot %d: %02d:%02dZ already passed today (GitHub cron ran late) — "
-            "scheduling for tomorrow: %s",
-            channel_id, slot, h, m, target.strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "[%s] Slot %d: %02d:%02dZ already passed today (GitHub cron delay) — "
+            "publishing immediately",
+            channel_id, slot, h, m,
         )
-    elif delta_seconds < 900:
+        return None
+
+    if delta_seconds < 900:
         # Less than 15 min away — too close for FB scheduled publish (minimum 10 min)
         logger.info(
             "[%s] Slot %d target %02d:%02dZ is too close (%.0f s) — publishing immediately",
             channel_id, slot, h, m, delta_seconds,
         )
         return None
-    else:
-        logger.info(
-            "[%s] Slot %d scheduling publish at %s (%d min from now)",
-            channel_id, slot, target.strftime("%Y-%m-%dT%H:%M:%SZ"), int(delta_seconds / 60),
-        )
 
     ts = int(target.timestamp())
+    logger.info(
+        "[%s] Slot %d scheduling publish at %s (%d min from now)",
+        channel_id, slot, target.strftime("%Y-%m-%dT%H:%M:%SZ"), int(delta_seconds / 60),
+    )
     return ts
 
 

@@ -47,10 +47,7 @@ def run_all_channels(
         logger.info("── Starting channel: %s (%s → %s) ──",
                     channel_id, channel["source_page_name"], channel["dest_page_name"])
         try:
-            result = run_channel(
-                channel=channel, slot=slot, dry_run=dry_run,
-                channel_index=channel_index, queue_interval_minutes=queue_interval,
-            )
+            result = run_channel(channel=channel, slot=slot, dry_run=dry_run)
             results.append(result)
 
             if result.get("token_warning"):

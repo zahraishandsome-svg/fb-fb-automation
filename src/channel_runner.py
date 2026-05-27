@@ -25,8 +25,7 @@ PROJECT_ROOT = Path(__file__).parent.parent
 DOWNLOADS_DIR = PROJECT_ROOT / "downloads"
 
 
-def run_channel(channel: Dict[str, Any], slot: int, dry_run: bool = False,
-                channel_index: int = 0, queue_interval_minutes: int = 5) -> Dict[str, Any]:
+def run_channel(channel: Dict[str, Any], slot: int, dry_run: bool = False) -> Dict[str, Any]:
     """
     Full pipeline for one channel, one slot.
     Returns: {channel_id, slot, status, video_uploaded, fb_url, error, token_warnings}
@@ -149,12 +148,9 @@ def run_channel(channel: Dict[str, Any], slot: int, dry_run: bool = False,
         title = video.get("title") or video["id"]
         description = _build_description(video, channel)
 
-        # Compute scheduled publish time: base time + (channel_index × queue_interval)
-        # e.g. page_1→13:00, page_2→13:05, page_3→13:10 — staggers publishes to avoid spam flags
-        scheduled_publish_time: Optional[int] = _get_scheduled_publish_time(
-            channel, slot, channel_id,
-            offset_minutes=channel_index * queue_interval_minutes,
-        )
+        # Compute scheduled publish time from slot_publish_times_utc config
+        # All channels publish at the same time — upload calls are staggered in orchestrator
+        scheduled_publish_time: Optional[int] = _get_scheduled_publish_time(channel, slot, channel_id)
 
         dest_video_id = upload_video(
             page_id=dest_page_id,
@@ -283,16 +279,13 @@ def _handle_failure(channel: Dict[str, Any], video: Dict[str, Any], error_msg: s
 # ── Scheduled publish time ────────────────────────────────────────────────────
 
 def _get_scheduled_publish_time(channel: Dict[str, Any], slot: int,
-                                 channel_id: str,
-                                 offset_minutes: int = 0) -> Optional[int]:
+                                 channel_id: str) -> Optional[int]:
     """
     Calculate the UTC Unix timestamp at which this slot's video should go live.
     Reads slot_publish_times_utc from channel config (e.g. {1: "13:00", 2: "15:00"}).
-    offset_minutes staggers channels: page_1=+0min, page_2=+5min, page_3=+10min, etc.
-    Returns a Unix timestamp when the target time is more than 15 minutes in the future —
-    video uploads as a draft and Facebook publishes it at exactly that time.
-    Returns None if no publish time is configured or the target is already too close/past
-    (falls back to immediate publish).
+    All channels publish at the same time — upload calls are staggered by the orchestrator.
+    Returns a Unix timestamp when the target time is more than 15 minutes in the future.
+    Returns None if no publish time is configured or target is too close/past (immediate publish).
     Facebook requires scheduled_publish_time to be at least 10 minutes in the future.
     """
     times = channel.get("slot_publish_times_utc") or {}
@@ -308,22 +301,19 @@ def _get_scheduled_publish_time(channel: Dict[str, Any], slot: int,
 
     now_utc = datetime.now(timezone.utc)
     target = now_utc.replace(hour=h, minute=m, second=0, microsecond=0)
-    target += timedelta(minutes=offset_minutes)
     delta_seconds = (target - now_utc).total_seconds()
 
     if delta_seconds < 900:   # less than 15 min away or already past → publish immediately
         logger.info(
-            "[%s] Slot %d target publish time %s is past or too close "
-            "(%.0f s) — publishing immediately",
-            channel_id, slot, target.strftime("%H:%MZ"), delta_seconds,
+            "[%s] Slot %d target %02d:%02dZ is past or too close (%.0f s) — publishing immediately",
+            channel_id, slot, h, m, delta_seconds,
         )
         return None
 
     ts = int(target.timestamp())
     logger.info(
-        "[%s] Slot %d scheduling publish at %s (%d min from now, queue offset +%dmin)",
-        channel_id, slot, target.strftime("%Y-%m-%dT%H:%M:%SZ"),
-        int(delta_seconds / 60), offset_minutes,
+        "[%s] Slot %d scheduling publish at %s (%d min from now)",
+        channel_id, slot, target.strftime("%Y-%m-%dT%H:%M:%SZ"), int(delta_seconds / 60),
     )
     return ts
 

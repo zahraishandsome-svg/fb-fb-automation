@@ -24,7 +24,7 @@ _MAX_DOWNLOAD_RETRIES = 3
 def get_source_videos(
     source_page_id: str,
     access_token: str,
-    limit: int = 100,
+    limit: int = 50,
 ) -> Optional[List[Dict[str, Any]]]:
     """
     Fetch videos from the source Facebook page, sorted by views descending (most popular first).

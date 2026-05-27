@@ -34,6 +34,7 @@ def load_config() -> Dict[str, Any]:
 
     return {
         "channels": validated,
+        "queue_interval_minutes": int(raw.get("queue_interval_minutes", 5)),
         "discord_webhook_url": os.getenv("DISCORD_WEBHOOK_URL", ""),
         "dry_run": os.getenv("DRY_RUN", "false").lower() == "true",
         "log_level": os.getenv("LOG_LEVEL", "INFO"),

@@ -1,3 +1,8 @@
+# Minutes between each channel's publish time within the same slot.
+# Prevents multiple pages from publishing simultaneously (spam/rate-limit risk).
+# page_1 publishes at base time, page_2 at base+5min, page_3 at base+10min, etc.
+queue_interval_minutes: 5
+
 channels:
   - id: page_1
     source_page_id: "1046482988557351"   # Walter Hayes

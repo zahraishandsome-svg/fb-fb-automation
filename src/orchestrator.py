@@ -33,18 +33,23 @@ def run_all_channels(
         logger.warning("No enabled channels found — nothing to do")
         return []
 
-    logger.info("Running slot %d | channels=%d | dry_run=%s", slot, len(channels), dry_run)
+    queue_interval = config.get("queue_interval_minutes", 5)
+    logger.info("Running slot %d | channels=%d | dry_run=%s | queue_interval=%dmin",
+                slot, len(channels), dry_run, queue_interval)
 
     results = []
     failures = []
     token_warnings = []
 
-    for channel in channels:
+    for channel_index, channel in enumerate(channels):
         channel_id = channel["id"]
         logger.info("── Starting channel: %s (%s → %s) ──",
                     channel_id, channel["source_page_name"], channel["dest_page_name"])
         try:
-            result = run_channel(channel=channel, slot=slot, dry_run=dry_run)
+            result = run_channel(
+                channel=channel, slot=slot, dry_run=dry_run,
+                channel_index=channel_index, queue_interval_minutes=queue_interval,
+            )
             results.append(result)
 
             if result.get("token_warning"):

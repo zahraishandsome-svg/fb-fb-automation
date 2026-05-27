@@ -35,6 +35,6 @@ channels:
     max_retry_days: 3
     shorts_max_seconds: 180
     slot_publish_times_utc:
-      1: "13:30"   # 6:30 PM PKT  (UTC+5)
-      2: "15:30"   # 8:30 PM PKT  (UTC+5)
-      3: "17:30"   # 10:30 PM PKT (UTC+5)
+      1: "13:00"   # 6 PM PKT  (UTC+5)
+      2: "15:00"   # 8 PM PKT  (UTC+5)
+      3: "17:00"   # 10 PM PKT (UTC+5)

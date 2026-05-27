@@ -49,9 +49,9 @@ def set_secret(session: requests.Session, key_id: str, key_b64: str,
         json={"encrypted_value": encrypted, "key_id": key_id},
     )
     if r.status_code in (201, 204):
-        print(f"  ✓ {name}")
+        print(f"  OK: {name}")
     else:
-        print(f"  ✗ {name}: {r.status_code} {r.text}")
+        print(f"  FAIL: {name}: {r.status_code} {r.text}")
         sys.exit(1)
 
 
@@ -79,7 +79,7 @@ def main() -> None:
         b64_value = base64.b64encode(file_content.encode("utf-8")).decode("utf-8")
         set_secret(session, key_id, key_b64, secret_name, b64_value)
 
-    print("\nAll 4 page_2 secrets set successfully!")
+    print("\nAll 4 page_2 secrets set successfully.")
     print("Next: commit and push, then page_2 will go live on the next cron run.")
 
 

@@ -1,0 +1,37 @@
+﻿2026-05-27T05:40:07.5662909Z ##[group]Run if [ ! -f data/automation.db ]; then
+2026-05-27T05:40:07.5663410Z [36;1mif [ ! -f data/automation.db ]; then[0m
+2026-05-27T05:40:07.5663808Z [36;1m  echo "No DB file found â€” skipping commit"[0m
+2026-05-27T05:40:07.5664158Z [36;1m  exit 0[0m
+2026-05-27T05:40:07.5664405Z [36;1mfi[0m
+2026-05-27T05:40:07.5664693Z [36;1mcp data/automation.db /tmp/automation_new.db[0m
+2026-05-27T05:40:07.5665050Z [36;1mgit fetch origin main[0m
+2026-05-27T05:40:07.5665364Z [36;1mgit checkout -B main origin/main[0m
+2026-05-27T05:40:07.5665720Z [36;1mcp /tmp/automation_new.db data/automation.db[0m
+2026-05-27T05:40:07.5666485Z [36;1mgit config user.name "github-actions[bot]"[0m
+2026-05-27T05:40:07.5666971Z [36;1mgit config user.email "github-actions[bot]@users.noreply.github.com"[0m
+2026-05-27T05:40:07.5667426Z [36;1mgit add -f data/automation.db[0m
+2026-05-27T05:40:07.5667768Z [36;1mif ! git diff --staged --quiet; then[0m
+2026-05-27T05:40:07.5668172Z [36;1m  git commit -m "chore: update automation.db [skip ci]"[0m
+2026-05-27T05:40:07.5668606Z [36;1m  git push origin main[0m
+2026-05-27T05:40:07.5668895Z [36;1melse[0m
+2026-05-27T05:40:07.5669149Z [36;1m  echo "No DB changes to commit"[0m
+2026-05-27T05:40:07.5669445Z [36;1mfi[0m
+2026-05-27T05:40:07.5704229Z shell: /usr/bin/bash -e {0}
+2026-05-27T05:40:07.5704541Z env:
+2026-05-27T05:40:07.5704866Z   pythonLocation: /opt/hostedtoolcache/Python/3.10.20/x64
+2026-05-27T05:40:07.5705372Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.10.20/x64/lib/pkgconfig
+2026-05-27T05:40:07.5706234Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.20/x64
+2026-05-27T05:40:07.5706710Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.20/x64
+2026-05-27T05:40:07.5707391Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.20/x64
+2026-05-27T05:40:07.5707832Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.10.20/x64/lib
+2026-05-27T05:40:07.5708209Z ##[endgroup]
+2026-05-27T05:40:07.7846887Z From https://github.com/zahraishandsome-svg/fb-fb-automation
+2026-05-27T05:40:07.7847830Z  * branch            main       -> FETCH_HEAD
+2026-05-27T05:40:07.7942970Z Reset branch 'main'
+2026-05-27T05:40:07.7945197Z M	data/automation.db
+2026-05-27T05:40:07.7946056Z branch 'main' set up to track 'origin/main'.
+2026-05-27T05:40:07.7946750Z Your branch is up to date with 'origin/main'.
+2026-05-27T05:40:07.8099059Z [main dfa192e] chore: update automation.db [skip ci]
+2026-05-27T05:40:07.8099964Z  1 file changed, 0 insertions(+), 0 deletions(-)
+2026-05-27T05:40:08.7204717Z To https://github.com/zahraishandsome-svg/fb-fb-automation
+2026-05-27T05:40:08.7206139Z    e687509..dfa192e  main -> main

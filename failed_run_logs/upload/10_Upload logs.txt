@@ -1,0 +1,28 @@
+﻿2026-05-27T05:40:08.7298864Z ##[group]Run actions/upload-artifact@v4
+2026-05-27T05:40:08.7299265Z with:
+2026-05-27T05:40:08.7299510Z   name: logs-slot1-26493078919
+2026-05-27T05:40:08.7299803Z   path: logs/
+2026-05-27T05:40:08.7300049Z   retention-days: 14
+2026-05-27T05:40:08.7300322Z   if-no-files-found: warn
+2026-05-27T05:40:08.7300592Z   compression-level: 6
+2026-05-27T05:40:08.7300849Z   overwrite: false
+2026-05-27T05:40:08.7301106Z   include-hidden-files: false
+2026-05-27T05:40:08.7301379Z env:
+2026-05-27T05:40:08.7301669Z   pythonLocation: /opt/hostedtoolcache/Python/3.10.20/x64
+2026-05-27T05:40:08.7302142Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.10.20/x64/lib/pkgconfig
+2026-05-27T05:40:08.7302601Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.20/x64
+2026-05-27T05:40:08.7303019Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.20/x64
+2026-05-27T05:40:08.7303443Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.20/x64
+2026-05-27T05:40:08.7303864Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.10.20/x64/lib
+2026-05-27T05:40:08.7304268Z ##[endgroup]
+2026-05-27T05:40:08.9564429Z With the provided path, there will be 1 file uploaded
+2026-05-27T05:40:08.9570740Z Artifact name is valid!
+2026-05-27T05:40:08.9571822Z Root directory input is valid!
+2026-05-27T05:40:09.1088101Z Beginning upload of artifact content to blob storage
+2026-05-27T05:40:09.2345230Z Uploaded bytes 901
+2026-05-27T05:40:09.2679428Z Finished uploading artifact content to blob storage!
+2026-05-27T05:40:09.2682794Z SHA256 digest of uploaded artifact zip is 7ad4295b3a3f00d1b07cfc26b21affdba544818bf296f957a5f5529e998b0150
+2026-05-27T05:40:09.2685037Z Finalizing artifact upload
+2026-05-27T05:40:09.4118226Z Artifact logs-slot1-26493078919.zip successfully finalized. Artifact ID 7232757481
+2026-05-27T05:40:09.4119555Z Artifact logs-slot1-26493078919 has been successfully uploaded! Final size is 901 bytes. Artifact ID is 7232757481
+2026-05-27T05:40:09.4127310Z Artifact download URL: https://github.com/zahraishandsome-svg/fb-fb-automation/actions/runs/26493078919/artifacts/7232757481

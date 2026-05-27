@@ -1,0 +1,19 @@
+﻿2026-05-27T05:39:37.5631716Z ##[group]Run actions/cache@v4
+2026-05-27T05:39:37.5632050Z with:
+2026-05-27T05:39:37.5632306Z   path: data/automation.db
+2026-05-27T05:39:37.5632744Z   key: fb-fb-automation-db-e687509e0a151f6b11af8d0ede78f1c8c8a66807-26493078919
+2026-05-27T05:39:37.5633343Z   restore-keys: fb-fb-automation-db-e687509e0a151f6b11af8d0ede78f1c8c8a66807-
+
+2026-05-27T05:39:37.5633815Z   enableCrossOsArchive: false
+2026-05-27T05:39:37.5634106Z   fail-on-cache-miss: false
+2026-05-27T05:39:37.5634375Z   lookup-only: false
+2026-05-27T05:39:37.5634622Z   save-always: false
+2026-05-27T05:39:37.5634859Z env:
+2026-05-27T05:39:37.5635146Z   pythonLocation: /opt/hostedtoolcache/Python/3.10.20/x64
+2026-05-27T05:39:37.5635627Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.10.20/x64/lib/pkgconfig
+2026-05-27T05:39:37.5636384Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.20/x64
+2026-05-27T05:39:37.5636807Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.20/x64
+2026-05-27T05:39:37.5637224Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.20/x64
+2026-05-27T05:39:37.5637689Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.10.20/x64/lib
+2026-05-27T05:39:37.5638049Z ##[endgroup]
+2026-05-27T05:39:37.8303367Z Cache not found for input keys: fb-fb-automation-db-e687509e0a151f6b11af8d0ede78f1c8c8a66807-26493078919, fb-fb-automation-db-e687509e0a151f6b11af8d0ede78f1c8c8a66807-

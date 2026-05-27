@@ -1,0 +1,21 @@
+﻿2026-05-27T05:39:33.1983397Z ##[group]Run actions/setup-python@v5
+2026-05-27T05:39:33.1984624Z with:
+2026-05-27T05:39:33.1985555Z   python-version: 3.10
+2026-05-27T05:39:33.1986743Z   cache: pip
+2026-05-27T05:39:33.1987904Z   check-latest: false
+2026-05-27T05:39:33.1997813Z   token: ***
+2026-05-27T05:39:33.1998768Z   update-environment: true
+2026-05-27T05:39:33.1999829Z   allow-prereleases: false
+2026-05-27T05:39:33.2000854Z   freethreaded: false
+2026-05-27T05:39:33.2001798Z ##[endgroup]
+2026-05-27T05:39:33.3844936Z ##[group]Installed versions
+2026-05-27T05:39:33.4472771Z Successfully set up CPython (3.10.20)
+2026-05-27T05:39:33.4476431Z ##[endgroup]
+2026-05-27T05:39:33.5087749Z [command]/opt/hostedtoolcache/Python/3.10.20/x64/bin/pip cache dir
+2026-05-27T05:39:35.2488555Z /home/runner/.cache/pip
+2026-05-27T05:39:35.4179397Z Cache hit for: setup-python-Linux-x64-24.04-Ubuntu-python-3.10.20-pip-5664c95f0e58ef8b7a6dd6520965c46716821adf52402ac89ac357152302cde5
+2026-05-27T05:39:35.7357755Z Received 1847053 of 1847053 (100.0%), 8.2 MBs/sec
+2026-05-27T05:39:35.7358818Z Cache Size: ~2 MB (1847053 B)
+2026-05-27T05:39:35.7419152Z [command]/usr/bin/tar -xf /home/runner/work/_temp/543b7db5-d9f8-4560-b442-51c94632c33b/cache.tzst -P -C /home/runner/work/fb-fb-automation/fb-fb-automation --use-compress-program unzstd
+2026-05-27T05:39:35.7670257Z Cache restored successfully
+2026-05-27T05:39:35.7682807Z Cache restored from key: setup-python-Linux-x64-24.04-Ubuntu-python-3.10.20-pip-5664c95f0e58ef8b7a6dd6520965c46716821adf52402ac89ac357152302cde5

@@ -1,0 +1,35 @@
+﻿2026-05-27T05:39:35.7863713Z ##[group]Run pip install -r requirements.txt
+2026-05-27T05:39:35.7864270Z [36;1mpip install -r requirements.txt[0m
+2026-05-27T05:39:35.7924771Z shell: /usr/bin/bash -e {0}
+2026-05-27T05:39:35.7925325Z env:
+2026-05-27T05:39:35.7926100Z   pythonLocation: /opt/hostedtoolcache/Python/3.10.20/x64
+2026-05-27T05:39:35.7926936Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.10.20/x64/lib/pkgconfig
+2026-05-27T05:39:35.7927741Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.20/x64
+2026-05-27T05:39:35.7928454Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.20/x64
+2026-05-27T05:39:35.7929208Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.20/x64
+2026-05-27T05:39:35.7929973Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.10.20/x64/lib
+2026-05-27T05:39:35.7930588Z ##[endgroup]
+2026-05-27T05:39:36.7928764Z Collecting requests>=2.31.0 (from -r requirements.txt (line 1))
+2026-05-27T05:39:36.7947214Z   Using cached requests-2.34.2-py3-none-any.whl.metadata (4.8 kB)
+2026-05-27T05:39:36.8106923Z Collecting python-dotenv>=1.0.0 (from -r requirements.txt (line 2))
+2026-05-27T05:39:36.8124054Z   Using cached python_dotenv-1.2.2-py3-none-any.whl.metadata (27 kB)
+2026-05-27T05:39:36.8710769Z Collecting pyyaml>=6.0 (from -r requirements.txt (line 3))
+2026-05-27T05:39:36.8729988Z   Using cached pyyaml-6.0.3-cp310-cp310-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.4 kB)
+2026-05-27T05:39:36.9883669Z Collecting charset_normalizer<4,>=2 (from requests>=2.31.0->-r requirements.txt (line 1))
+2026-05-27T05:39:36.9902472Z   Using cached charset_normalizer-3.4.7-cp310-cp310-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (40 kB)
+2026-05-27T05:39:37.0054810Z Collecting idna<4,>=2.5 (from requests>=2.31.0->-r requirements.txt (line 1))
+2026-05-27T05:39:37.0073642Z   Using cached idna-3.16-py3-none-any.whl.metadata (6.4 kB)
+2026-05-27T05:39:37.0312653Z Collecting urllib3<3,>=1.26 (from requests>=2.31.0->-r requirements.txt (line 1))
+2026-05-27T05:39:37.0330424Z   Using cached urllib3-2.7.0-py3-none-any.whl.metadata (6.9 kB)
+2026-05-27T05:39:37.0513276Z Collecting certifi>=2023.5.7 (from requests>=2.31.0->-r requirements.txt (line 1))
+2026-05-27T05:39:37.0531514Z   Using cached certifi-2026.5.20-py3-none-any.whl.metadata (2.5 kB)
+2026-05-27T05:39:37.0572215Z Using cached requests-2.34.2-py3-none-any.whl (73 kB)
+2026-05-27T05:39:37.0587413Z Using cached charset_normalizer-3.4.7-cp310-cp310-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (216 kB)
+2026-05-27T05:39:37.0604196Z Using cached idna-3.16-py3-none-any.whl (74 kB)
+2026-05-27T05:39:37.0618075Z Using cached urllib3-2.7.0-py3-none-any.whl (131 kB)
+2026-05-27T05:39:37.0631753Z Using cached python_dotenv-1.2.2-py3-none-any.whl (22 kB)
+2026-05-27T05:39:37.0645445Z Using cached pyyaml-6.0.3-cp310-cp310-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (770 kB)
+2026-05-27T05:39:37.0662075Z Using cached certifi-2026.5.20-py3-none-any.whl (134 kB)
+2026-05-27T05:39:37.1613707Z Installing collected packages: urllib3, pyyaml, python-dotenv, idna, charset_normalizer, certifi, requests
+2026-05-27T05:39:37.4781403Z 
+2026-05-27T05:39:37.4800775Z Successfully installed certifi-2026.5.20 charset_normalizer-3.4.7 idna-3.16 python-dotenv-1.2.2 pyyaml-6.0.3 requests-2.34.2 urllib3-2.7.0

@@ -1,0 +1,16 @@
+﻿2026-05-27T05:40:07.0329876Z ##[group]Run actions/cache/save@v4
+2026-05-27T05:40:07.0330214Z with:
+2026-05-27T05:40:07.0330457Z   path: data/automation.db
+2026-05-27T05:40:07.0330753Z   key: fb-fb-automation-db-26493078919
+2026-05-27T05:40:07.0331069Z   enableCrossOsArchive: false
+2026-05-27T05:40:07.0331337Z env:
+2026-05-27T05:40:07.0331624Z   pythonLocation: /opt/hostedtoolcache/Python/3.10.20/x64
+2026-05-27T05:40:07.0332092Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.10.20/x64/lib/pkgconfig
+2026-05-27T05:40:07.0332555Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.20/x64
+2026-05-27T05:40:07.0332973Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.20/x64
+2026-05-27T05:40:07.0333383Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.20/x64
+2026-05-27T05:40:07.0333827Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.10.20/x64/lib
+2026-05-27T05:40:07.0334183Z ##[endgroup]
+2026-05-27T05:40:07.1832268Z [command]/usr/bin/tar --posix -cf cache.tzst --exclude cache.tzst -P -C /home/runner/work/fb-fb-automation/fb-fb-automation --files-from manifest.txt --use-compress-program zstdmt
+2026-05-27T05:40:07.4719714Z Sent 2246 of 2246 (100.0%), 0.0 MBs/sec
+2026-05-27T05:40:07.5577614Z Cache saved with key: fb-fb-automation-db-26493078919

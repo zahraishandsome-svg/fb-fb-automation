@@ -1,0 +1,72 @@
+﻿2026-05-27T05:39:32.6071699Z ##[group]Run actions/checkout@v4
+2026-05-27T05:39:32.6073310Z with:
+2026-05-27T05:39:32.6074401Z   repository: zahraishandsome-svg/fb-fb-automation
+2026-05-27T05:39:32.6085041Z   token: ***
+2026-05-27T05:39:32.6086133Z   ssh-strict: true
+2026-05-27T05:39:32.6087105Z   ssh-user: git
+2026-05-27T05:39:32.6088068Z   persist-credentials: true
+2026-05-27T05:39:32.6089132Z   clean: true
+2026-05-27T05:39:32.6090106Z   sparse-checkout-cone-mode: true
+2026-05-27T05:39:32.6091233Z   fetch-depth: 1
+2026-05-27T05:39:32.6092191Z   fetch-tags: false
+2026-05-27T05:39:32.6093175Z   show-progress: true
+2026-05-27T05:39:32.6094153Z   lfs: false
+2026-05-27T05:39:32.6095045Z   submodules: false
+2026-05-27T05:39:32.6096138Z   set-safe-directory: true
+2026-05-27T05:39:32.6097489Z ##[endgroup]
+2026-05-27T05:39:32.7302355Z Syncing repository: zahraishandsome-svg/fb-fb-automation
+2026-05-27T05:39:32.7305681Z ##[group]Getting Git version info
+2026-05-27T05:39:32.7307721Z Working directory is '/home/runner/work/fb-fb-automation/fb-fb-automation'
+2026-05-27T05:39:32.7310092Z [command]/usr/bin/git version
+2026-05-27T05:39:32.7362227Z git version 2.54.0
+2026-05-27T05:39:32.7390822Z ##[endgroup]
+2026-05-27T05:39:32.7407238Z Temporarily overriding HOME='/home/runner/work/_temp/b9df32a9-01da-4124-8161-671289e75da1' before making global git config changes
+2026-05-27T05:39:32.7410232Z Adding repository directory to the temporary git global config as a safe directory
+2026-05-27T05:39:32.7413863Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/fb-fb-automation/fb-fb-automation
+2026-05-27T05:39:32.7472243Z Deleting the contents of '/home/runner/work/fb-fb-automation/fb-fb-automation'
+2026-05-27T05:39:32.7476699Z ##[group]Initializing the repository
+2026-05-27T05:39:32.7481431Z [command]/usr/bin/git init /home/runner/work/fb-fb-automation/fb-fb-automation
+2026-05-27T05:39:32.7574742Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-05-27T05:39:32.7579005Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-05-27T05:39:32.7581312Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-05-27T05:39:32.7582990Z hint: call:
+2026-05-27T05:39:32.7584110Z hint:
+2026-05-27T05:39:32.7586220Z hint: 	git config --global init.defaultBranch <name>
+2026-05-27T05:39:32.7655707Z hint:
+2026-05-27T05:39:32.7658961Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-05-27T05:39:32.7661636Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-05-27T05:39:32.7663276Z hint:
+2026-05-27T05:39:32.7664168Z hint: 	git branch -m <name>
+2026-05-27T05:39:32.7665196Z hint:
+2026-05-27T05:39:32.7666848Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-05-27T05:39:32.7669141Z Initialized empty Git repository in /home/runner/work/fb-fb-automation/fb-fb-automation/.git/
+2026-05-27T05:39:32.7673225Z [command]/usr/bin/git remote add origin https://github.com/zahraishandsome-svg/fb-fb-automation
+2026-05-27T05:39:32.7677251Z ##[endgroup]
+2026-05-27T05:39:32.7679451Z ##[group]Disabling automatic garbage collection
+2026-05-27T05:39:32.7680889Z [command]/usr/bin/git config --local gc.auto 0
+2026-05-27T05:39:32.7683909Z ##[endgroup]
+2026-05-27T05:39:32.7685401Z ##[group]Setting up auth
+2026-05-27T05:39:32.7689371Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-05-27T05:39:32.7727132Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-05-27T05:39:32.8114600Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-05-27T05:39:32.8148161Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-05-27T05:39:32.8383590Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-05-27T05:39:32.8418691Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-05-27T05:39:32.8667807Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-05-27T05:39:32.8707526Z ##[endgroup]
+2026-05-27T05:39:32.8709294Z ##[group]Fetching the repository
+2026-05-27T05:39:32.8717295Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +e687509e0a151f6b11af8d0ede78f1c8c8a66807:refs/remotes/origin/main
+2026-05-27T05:39:33.1341756Z From https://github.com/zahraishandsome-svg/fb-fb-automation
+2026-05-27T05:39:33.1344569Z  * [new ref]         e687509e0a151f6b11af8d0ede78f1c8c8a66807 -> origin/main
+2026-05-27T05:39:33.1381857Z ##[endgroup]
+2026-05-27T05:39:33.1383794Z ##[group]Determining the checkout info
+2026-05-27T05:39:33.1385644Z ##[endgroup]
+2026-05-27T05:39:33.1388246Z [command]/usr/bin/git sparse-checkout disable
+2026-05-27T05:39:33.1439841Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-05-27T05:39:33.1472021Z ##[group]Checking out the ref
+2026-05-27T05:39:33.1474607Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+2026-05-27T05:39:33.1542106Z Switched to a new branch 'main'
+2026-05-27T05:39:33.1544644Z branch 'main' set up to track 'origin/main'.
+2026-05-27T05:39:33.1552567Z ##[endgroup]
+2026-05-27T05:39:33.1596465Z [command]/usr/bin/git log -1 --format=%H
+2026-05-27T05:39:33.1622934Z e687509e0a151f6b11af8d0ede78f1c8c8a66807

@@ -1,0 +1,34 @@
+﻿2026-05-27T05:39:37.8713255Z ##[group]Run CHANNEL_ARG=""
+2026-05-27T05:39:37.8713668Z [36;1mCHANNEL_ARG=""[0m
+2026-05-27T05:39:37.8713958Z [36;1mif [ -n "page_2" ]; then[0m
+2026-05-27T05:39:37.8714279Z [36;1m  CHANNEL_ARG="--channel page_2"[0m
+2026-05-27T05:39:37.8714586Z [36;1mfi[0m
+2026-05-27T05:39:37.8714853Z [36;1mpython run.py --slot 1 $CHANNEL_ARG[0m
+2026-05-27T05:39:37.8750336Z shell: /usr/bin/bash -e {0}
+2026-05-27T05:39:37.8750653Z env:
+2026-05-27T05:39:37.8750989Z   pythonLocation: /opt/hostedtoolcache/Python/3.10.20/x64
+2026-05-27T05:39:37.8751509Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.10.20/x64/lib/pkgconfig
+2026-05-27T05:39:37.8752001Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.20/x64
+2026-05-27T05:39:37.8752430Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.20/x64
+2026-05-27T05:39:37.8752873Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.20/x64
+2026-05-27T05:39:37.8753305Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.10.20/x64/lib
+2026-05-27T05:39:37.8753679Z ##[endgroup]
+2026-05-27T05:39:38.8072582Z 2026-05-27 05:39:38,806 [INFO    ] run: ============================================================
+2026-05-27T05:39:38.8074475Z 2026-05-27 05:39:38,807 [INFO    ] run: FB→Facebook Automation | Slot 1 | dry_run=False
+2026-05-27T05:39:38.8075505Z 2026-05-27 05:39:38,807 [INFO    ] run: ============================================================
+2026-05-27T05:39:38.8132636Z 2026-05-27 05:39:38,812 [INFO    ] src.orchestrator: Running slot 1 | channels=1 | dry_run=False | queue_interval=5min
+2026-05-27T05:39:38.8134392Z 2026-05-27 05:39:38,813 [INFO    ] src.orchestrator: ── Starting channel: page_2 (Mama Roses → Sacred Sisters) ──
+2026-05-27T05:39:38.8200210Z 2026-05-27 05:39:38,819 [WARNING ] src.facebook_poster: Could not parse expires_at: never
+2026-05-27T05:39:38.8200924Z 2026-05-27 05:39:38,819 [WARNING ] src.facebook_poster: Could not parse expires_at: never
+2026-05-27T05:39:50.7997728Z 2026-05-27 05:39:50,799 [INFO    ] src.fb_source: Sorted 140 videos by views (top: 884276 views)
+2026-05-27T05:39:50.8053203Z 2026-05-27 05:39:50,805 [INFO    ] src.channel_runner: [page_2] Selected video: 919766917715129 | ''
+2026-05-27T05:39:51.9367208Z 2026-05-27 05:39:51,936 [INFO    ] src.fb_source: Downloaded video 919766917715129 → 4.9 MB
+2026-05-27T05:39:51.9381332Z 2026-05-27 05:39:51,937 [INFO    ] src.channel_runner: [page_2] Slot 1 scheduling publish at 2026-05-27T13:00:00Z (440 min from now)
+2026-05-27T05:39:51.9383422Z 2026-05-27 05:39:51,938 [INFO    ] src.facebook_poster: Uploading to Facebook page 943932732136906 | size=4.9 MB | reel=True | scheduled=1779886800
+2026-05-27T05:40:06.9958808Z 2026-05-27 05:40:06,995 [ERROR   ] src.facebook_poster: Reel upload finish failed: 400 Client Error: Bad Request for url: https://graph-video.facebook.com/v19.0/943932732136906/video_reels
+2026-05-27T05:40:07.0022000Z 2026-05-27 05:40:07,001 [WARNING ] src.channel_runner: [page_2] Video 919766917715129 queued for retry tomorrow: Upload returned no video ID
+2026-05-27T05:40:07.0038963Z 2026-05-27 05:40:07,003 [ERROR   ] src.orchestrator: [page_2] FAILED: Upload returned no video ID
+2026-05-27T05:40:07.0040790Z 2026-05-27 05:40:07,003 [INFO    ] src.orchestrator: ── Summary: 0 success | 1 failed | 0 skipped | 0 no_content ──
+2026-05-27T05:40:07.0042209Z 2026-05-27 05:40:07,003 [ERROR   ] src.orchestrator:   ✗ page_2 → Upload returned no video ID
+2026-05-27T05:40:07.0042947Z 2026-05-27 05:40:07,003 [INFO    ] run: Log saved to: logs/run_20260527_053938.log
+2026-05-27T05:40:07.0267119Z ##[error]Process completed with exit code 1.

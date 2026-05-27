@@ -1,8 +1,8 @@
-name: Upload Slot 1 (6PM PKT)
+﻿name: Upload Slot 1 (6PM PKT)
 
 on:
   schedule:
-    - cron: "0 12 * * *"   # 12:00 UTC = 5:00 PM PKT → schedules publish at 6:00 PM PKT (13:00 UTC)
+    - cron: "0 12 * * *"   # 12:00 UTC = 5:00 PM PKT â†’ schedules publish at 6:00 PM PKT (13:00 UTC)
   workflow_dispatch:
     inputs:
       channel:
@@ -21,7 +21,7 @@ concurrency:
 jobs:
   upload:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 120
     permissions:
       contents: write
 
@@ -105,7 +105,7 @@ jobs:
         if: always()
         run: |
           if [ ! -f data/automation.db ]; then
-            echo "No DB file found — skipping commit"
+            echo "No DB file found â€” skipping commit"
             exit 0
           fi
           cp data/automation.db /tmp/automation_new.db

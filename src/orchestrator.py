@@ -4,6 +4,7 @@ Error isolation: if one channel fails, the others still run.
 """
 
 import logging
+import time
 from typing import Dict, Any, List, Optional
 
 from .config import get_enabled_channels
@@ -66,6 +67,15 @@ def run_all_channels(
                 logger.info("[%s] SUCCESS: %s", channel_id, result.get("fb_url"))
             else:
                 logger.info("[%s] %s", channel_id, result["status"].upper())
+
+            # Sleep between channels to space out API calls — prevents Facebook
+            # from seeing rapid sequential uploads from the same app/account.
+            # Skip sleep after the last channel.
+            is_last = channel_index == len(channels) - 1
+            if not is_last and queue_interval > 0:
+                sleep_seconds = queue_interval * 60
+                logger.info("Waiting %d min before next channel (queue spacing)...", queue_interval)
+                time.sleep(sleep_seconds)
 
         except Exception as exc:
             error_msg = f"Unhandled exception in channel runner: {exc}"

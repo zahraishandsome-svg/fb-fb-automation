@@ -324,13 +324,19 @@ def _upload_reel(page_id: str, token: str, video_path: Path,
             finish_payload["scheduled_publish_time"] = scheduled_publish_time
         else:
             finish_payload["video_state"] = "PUBLISHED"
-        resp = _post_with_retry(endpoint, data=finish_payload, timeout=60)
+        # Use requests.post directly (not _post_with_retry) so we can log FB's
+        # actual error body on 400 — _post_with_retry swallows it via raise_for_status()
+        resp = requests.post(endpoint, data=finish_payload, timeout=60)
         if not resp.ok:
-            logger.error("Reel upload finish failed: %s %s", resp.status_code, resp.text)
+            logger.error(
+                "Reel upload finish failed: HTTP %s | payload=%s | response=%s",
+                resp.status_code, {k: v for k, v in finish_payload.items() if k != "access_token"},
+                resp.text,
+            )
             return None
         logger.info("Reel finish phase complete. FB video ID: %s", video_id)
     except requests.RequestException as exc:
-        logger.error("Reel upload finish failed: %s", exc)
+        logger.error("Reel upload finish failed (network): %s", exc)
         return None
 
     # ── 4. Explicit publish (Reels API ignores published=true in finish phase) ─

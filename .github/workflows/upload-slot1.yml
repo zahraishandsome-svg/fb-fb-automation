@@ -54,6 +54,10 @@ jobs:
           PAGE_2_SOURCE_TOKEN: ${{ secrets.PAGE_2_SOURCE_TOKEN }}
           PAGE_2_DEST_CREDENTIALS: ${{ secrets.PAGE_2_DEST_CREDENTIALS }}
           PAGE_2_DEST_TOKEN: ${{ secrets.PAGE_2_DEST_TOKEN }}
+          PAGE_3_SOURCE_CREDENTIALS: ${{ secrets.PAGE_3_SOURCE_CREDENTIALS }}
+          PAGE_3_SOURCE_TOKEN: ${{ secrets.PAGE_3_SOURCE_TOKEN }}
+          PAGE_3_DEST_CREDENTIALS: ${{ secrets.PAGE_3_DEST_CREDENTIALS }}
+          PAGE_3_DEST_TOKEN: ${{ secrets.PAGE_3_DEST_TOKEN }}
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: |
           mkdir -p credentials tokens
@@ -80,6 +84,18 @@ jobs:
           fi
           if [ -n "$PAGE_2_DEST_TOKEN" ]; then
             echo "$PAGE_2_DEST_TOKEN" | base64 -d > tokens/page_2_dest_token.json
+          fi
+          if [ -n "$PAGE_3_SOURCE_CREDENTIALS" ]; then
+            echo "$PAGE_3_SOURCE_CREDENTIALS" | base64 -d > credentials/page_3_source_credentials.json
+          fi
+          if [ -n "$PAGE_3_SOURCE_TOKEN" ]; then
+            echo "$PAGE_3_SOURCE_TOKEN" | base64 -d > tokens/page_3_source_token.json
+          fi
+          if [ -n "$PAGE_3_DEST_CREDENTIALS" ]; then
+            echo "$PAGE_3_DEST_CREDENTIALS" | base64 -d > credentials/page_3_dest_credentials.json
+          fi
+          if [ -n "$PAGE_3_DEST_TOKEN" ]; then
+            echo "$PAGE_3_DEST_TOKEN" | base64 -d > tokens/page_3_dest_token.json
           fi
           printf "DISCORD_WEBHOOK_URL=%s\nLOG_LEVEL=INFO\n" "$DISCORD_WEBHOOK_URL" > .env
           if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
@@ -129,3 +145,4 @@ jobs:
           name: logs-slot1-${{ github.run_id }}
           path: logs/
           retention-days: 14
+

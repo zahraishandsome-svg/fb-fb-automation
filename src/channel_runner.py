@@ -18,6 +18,7 @@ from .fb_source import (
 from .facebook_poster import (
     upload_video, check_token_expiry, TOKEN_EXPIRY_WARNING_DAYS,
 )
+from .video_processor import reencode_video, is_ffmpeg_available
 
 logger = logging.getLogger(__name__)
 
@@ -137,6 +138,19 @@ def run_channel(channel: Dict[str, Any], slot: int, dry_run: bool = False) -> Di
             result["error"] = "Download failed"
             return result
 
+        # Re-encode to change video fingerprint — avoids FB duplicate-content suppression.
+        # If ffmpeg is unavailable (local dev), skip silently and upload original.
+        # If ffmpeg is present but fails, fail the run (don't silently upload original).
+        reencoded_file = _reencode_video(channel, video, local_file, dry_run)
+        if reencoded_file is None:
+            cleanup_download(local_file)
+            db.finish_run(run_id, "failed", error_message="Re-encode failed")
+            result["status"] = "failed"
+            result["error"] = "Re-encode failed"
+            return result
+
+        upload_file = reencoded_file
+
         length_seconds = video.get("length")
         is_reel = is_short_video(
             length_seconds,
@@ -155,13 +169,18 @@ def run_channel(channel: Dict[str, Any], slot: int, dry_run: bool = False) -> Di
         dest_video_id = upload_video(
             page_id=dest_page_id,
             page_access_token=dest_token,
-            video_path=local_file,
+            video_path=upload_file,
             title=title,
             description=description,
             is_reel=is_reel,
             dry_run=dry_run,
             scheduled_publish_time=scheduled_publish_time,
         )
+
+        # Clean up both original and re-encoded file
+        cleanup_download(local_file)
+        if reencoded_file != local_file:
+            cleanup_download(reencoded_file)
 
         if dest_video_id:
             if not dry_run:
@@ -171,7 +190,6 @@ def run_channel(channel: Dict[str, Any], slot: int, dry_run: bool = False) -> Di
                 db.finish_run(run_id, "dry_run", videos_uploaded=0)
                 logger.info("[%s] [DRY RUN] Would have uploaded: https://www.facebook.com/video/%s",
                             channel_id, dest_video_id)
-            cleanup_download(local_file)
             result["status"] = "success"
             result["video_uploaded"] = title
             result["fb_url"] = f"https://www.facebook.com/video/{dest_video_id}"
@@ -235,6 +253,38 @@ def _pick_next_video(
             return video, False
 
     return None, False
+
+
+# ── Re-encode ────────────────────────────────────────────────────────────────
+
+def _reencode_video(
+    channel: Dict[str, Any],
+    video: Dict[str, Any],
+    local_file: Path,
+    dry_run: bool,
+) -> Optional[Path]:
+    """
+    Re-encode the downloaded video with ffmpeg before uploading.
+    Returns the re-encoded file path, the original path (if ffmpeg absent),
+    or None on failure.
+    """
+    if dry_run:
+        return local_file  # no re-encode needed in dry-run mode
+
+    if not is_ffmpeg_available():
+        logger.warning(
+            "[%s] ffmpeg not found — uploading original without re-encode. "
+            "Add 'Install ffmpeg' step to workflow to enable fingerprint bypass.",
+            channel["id"],
+        )
+        return local_file  # graceful fallback for local dev without ffmpeg
+
+    reencoded_path = local_file.parent / f"{local_file.stem}_reencoded.mp4"
+    try:
+        return reencode_video(local_file, reencoded_path)
+    except Exception as exc:
+        logger.error("[%s] Re-encode failed for %s: %s", channel["id"], video["id"], exc)
+        return None
 
 
 # ── Download ──────────────────────────────────────────────────────────────────
